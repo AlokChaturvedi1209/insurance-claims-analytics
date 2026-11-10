@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "8ddad49e9aa749958416",
+  "position": {
+    "x": 40,
+    "y": 310,
+    "z": 2000,
+    "height": 375,
+    "width": 880,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim_event"
+                    }
+                  },
+                  "Property": "stage"
+                }
+              },
+              "queryRef": "public vw_fact_claim_event.stage",
+              "nativeQueryRef": "stage",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim_event"
+                    }
+                  },
+                  "Property": "Completed SLA Breaches"
+                }
+              },
+              "queryRef": "public vw_fact_claim_event.Completed SLA Breaches",
+              "nativeQueryRef": "Completed SLA Breaches"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Stage SLA breaches'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

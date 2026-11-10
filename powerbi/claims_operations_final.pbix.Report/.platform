@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "claims_operations_final.pbix"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "071210d6-e6b5-401c-93a6-8c3d80bdf465"
+  }
+}

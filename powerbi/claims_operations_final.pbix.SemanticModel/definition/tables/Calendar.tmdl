@@ -1,0 +1,62 @@
+table Calendar
+	lineageTag: 12c78949-8165-4048-8526-07d2acfc3419
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: General Date
+		lineageTag: 604a53b7-eec9-495d-8787-74dc43079db2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 23d8e981-4505-4301-8d82-f46e68290950
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		formatString: 0
+		lineageTag: 944812ce-94c6-4eb4-a0e2-137421c5f564
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		lineageTag: a4e8ba74-f074-4980-84ce-6f19da8c699c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year-Month
+		lineageTag: 449391f0-4472-4311-92b3-df941eaf6233
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year-Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    CALENDAR(DATE(2026, 1, 1), DATE(2026, 12, 31)),
+				    "Year", YEAR([Date]),
+				    "Month Number", MONTH([Date]),
+				    "Month", FORMAT([Date], "MMM"),
+				    "Year-Month", FORMAT([Date], "YYYY-MM")
+				)
+
+	annotation PBI_Id = d9ad7aa738254f66b1d8179765f78a99
+

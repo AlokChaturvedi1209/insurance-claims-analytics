@@ -1,0 +1,38 @@
+table 'public vw_dim_team'
+	lineageTag: 7edb2e58-5901-4501-a57f-f49eb5a063e7
+
+	column team_id
+		dataType: string
+		lineageTag: 3a10d954-fbf3-40b0-9301-c0db77e872af
+		summarizeBy: none
+		sourceColumn: team_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column team_name
+		dataType: string
+		lineageTag: bfcf3975-dc66-43a7-b923-60d7b4ecf938
+		summarizeBy: none
+		sourceColumn: team_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: 53ac26d0-cdde-4a28-bcc4-3012a6c06889
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public vw_dim_team' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_dim_team = Source{[Schema="public",Item="vw_dim_team"]}[Data]
+				in
+				    public_vw_dim_team
+
+	annotation PBI_ResultType = Table
+

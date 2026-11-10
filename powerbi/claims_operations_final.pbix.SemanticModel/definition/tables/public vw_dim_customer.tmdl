@@ -1,0 +1,48 @@
+table 'public vw_dim_customer'
+	lineageTag: 99ddb89b-258e-4655-a631-a0c2401fb60e
+
+	column customer_id
+		dataType: string
+		lineageTag: ce62ce5a-8c92-4794-b67d-3e26b0b6d1a4
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 1f4b9d4d-28e8-4a1b-80d8-10721e3290f4
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: e78ec878-15c9-4cc2-a424-6938dfaac288
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_segment
+		dataType: string
+		lineageTag: ee952820-2906-4a35-8b72-f29bab5b59d9
+		summarizeBy: none
+		sourceColumn: customer_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public vw_dim_customer' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_dim_customer = Source{[Schema="public",Item="vw_dim_customer"]}[Data]
+				in
+				    public_vw_dim_customer
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

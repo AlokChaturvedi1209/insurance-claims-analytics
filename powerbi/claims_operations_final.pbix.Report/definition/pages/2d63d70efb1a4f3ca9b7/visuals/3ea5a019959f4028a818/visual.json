@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "3ea5a019959f4028a818",
+  "position": {
+    "x": 950,
+    "y": 310,
+    "z": 2100,
+    "height": 375,
+    "width": 925,
+    "tabOrder": 2100
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim_event"
+                    }
+                  },
+                  "Property": "stage"
+                }
+              },
+              "queryRef": "public vw_fact_claim_event.stage",
+              "nativeQueryRef": "stage",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim_event"
+                    }
+                  },
+                  "Property": "Average Completed Stage Hours"
+                }
+              },
+              "queryRef": "public vw_fact_claim_event.Average Completed Stage Hours",
+              "nativeQueryRef": "Average Completed Stage Hours"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Avg completed-stage processing time (hours)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

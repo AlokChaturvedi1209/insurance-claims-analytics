@@ -1,0 +1,84 @@
+relationship 368eb47e-6bee-42c3-9e48-d913a0678d27
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_dim_policy'.start_date
+	toColumn: LocalDateTable_3acd4abb-8d14-445e-8b1b-75667a8ca99f.Date
+
+relationship b0e5a958-f6d5-48cd-a79f-bea3d2796be8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_dim_policy'.end_date
+	toColumn: LocalDateTable_8ae835d2-253c-4e1f-9ac2-f99410a8c0ae.Date
+
+relationship ff28a756-7057-4735-8a5d-95c5a3171588
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim'.submitted_at
+	toColumn: LocalDateTable_6b335c40-d130-4b66-b2d1-a01e49766f45.Date
+
+relationship 6bc88639-d0e6-4187-89f1-723821926dca
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim'.closed_at
+	toColumn: LocalDateTable_21548ffa-7d38-46d8-99fa-641ffb2fe19b.Date
+
+relationship d1568636-e6f2-48f1-a0df-9e64094261de
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim_event'.entered_at
+	toColumn: LocalDateTable_db39feef-d660-4c75-a14f-7e4255827b72.Date
+
+relationship dda69516-3a70-4e1d-bc9a-c69caccf74c7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim_event'.exited_at
+	toColumn: LocalDateTable_26d11f35-2dd2-4f8f-b7b3-d18ee6836d78.Date
+
+relationship c387863c-b3de-4a67-abd0-6da46055c065
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim_event'.effective_from
+	toColumn: LocalDateTable_05aab5ff-dc60-43cc-878e-d39c30cc6c36.Date
+
+relationship b1c7d6a1-aff8-4971-be2a-2f5c16586576
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_fact_claim_event'.effective_to
+	toColumn: LocalDateTable_ba21f513-f38f-48a7-a6a9-cd78e05906e7.Date
+
+relationship b30fa253-1104-41c6-8c52-c18de8f3d2c4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_dim_sla_rule'.effective_from
+	toColumn: LocalDateTable_598e8235-63fe-44e6-b459-e1c2584fe68f.Date
+
+relationship 319dd5f2-7d8b-4fae-9e77-aada81f20acf
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'public vw_dim_sla_rule'.effective_to
+	toColumn: LocalDateTable_e9ca4f27-ff6e-4497-a6e6-9845e2448196.Date
+
+relationship AutoDetected_a990a98f-29dd-4b89-b8a3-b041f6e938fe
+	fromColumn: 'public vw_dim_policy'.customer_id
+	toColumn: 'public vw_dim_customer'.customer_id
+
+relationship AutoDetected_7a462bd0-d14a-4adf-8cf0-ac09f67ac3df
+	fromColumn: 'public vw_fact_claim'.customer_id
+	toColumn: 'public vw_dim_customer'.customer_id
+
+relationship AutoDetected_2bbbafc2-6574-4748-8255-a2b6f7113dc6
+	isActive: false
+	fromColumn: 'public vw_fact_claim'.policy_id
+	toColumn: 'public vw_dim_policy'.policy_id
+
+relationship AutoDetected_9cc78120-4b04-4295-b29e-e40aefe8a0ca
+	fromColumn: 'public vw_fact_claim_event'.policy_id
+	toColumn: 'public vw_dim_policy'.policy_id
+
+relationship AutoDetected_e562e5b8-b410-4f8a-987f-5e9e4776b13c
+	fromColumn: 'public vw_fact_claim_event'.team_id
+	toColumn: 'public vw_dim_team'.team_id
+
+relationship AutoDetected_ac860df7-44a3-433b-8e44-609266f9f579
+	isActive: false
+	fromColumn: 'public vw_fact_claim_event'.claim_id
+	toColumn: 'public vw_fact_claim'.claim_id
+
+relationship AutoDetected_3301dd49-ab32-41a7-86a3-dc28d7108f9b
+	fromColumn: 'public vw_fact_claim_event'.rule_id
+	toColumn: 'public vw_dim_sla_rule'.rule_id
+
+relationship d278ed79-df2e-c5d1-4fec-d8f434e8d3f8
+	fromColumn: 'public vw_fact_claim'.'Submitted Date'
+	toColumn: Calendar.Date
+

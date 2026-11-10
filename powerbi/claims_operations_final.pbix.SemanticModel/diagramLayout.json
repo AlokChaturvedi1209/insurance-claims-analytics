@@ -1,0 +1,112 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 764.79998779296875,
+        "y": 159.19999694824219
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1066.2993310941706,
+            "y": 528.602291716797
+          },
+          "nodeIndex": "public vw_dim_customer",
+          "nodeLineageTag": "99ddb89b-258e-4655-a631-a0c2401fb60e",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 642.31508089818362,
+            "y": 529.28814857382781
+          },
+          "nodeIndex": "public vw_dim_policy",
+          "nodeLineageTag": "7f4afa50-a641-433e-ba99-341630d8017e",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 547.876296990956,
+            "y": -50
+          },
+          "nodeIndex": "public vw_dim_sla_rule",
+          "nodeLineageTag": "cc804ffb-cbd1-4b40-9bad-32dab57ade52",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 408.5786020862339
+          },
+          "nodeIndex": "public vw_dim_team",
+          "nodeLineageTag": "7edb2e58-5901-4501-a57f-f49eb5a063e7",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 837.45515423942311,
+            "y": 169.71380728559973
+          },
+          "nodeIndex": "public vw_fact_claim",
+          "nodeLineageTag": "4d34cbae-63d8-41b1-9e63-831981d9eef4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 336.57404448287559,
+            "y": 233.20583609418406
+          },
+          "nodeIndex": "public vw_fact_claim_event",
+          "nodeLineageTag": "b3faf8b7-d2b7-4433-b446-bf975c158c0b",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1300.2993310941706,
+            "y": 301.64407428691391
+          },
+          "nodeIndex": "Calendar",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

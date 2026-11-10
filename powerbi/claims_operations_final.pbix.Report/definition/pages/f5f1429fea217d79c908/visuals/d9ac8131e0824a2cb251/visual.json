@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "d9ac8131e0824a2cb251",
+  "position": {
+    "x": 950,
+    "y": 750,
+    "z": 6200,
+    "height": 240,
+    "width": 925,
+    "tabOrder": 6200
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim"
+                    }
+                  },
+                  "Property": "current_status"
+                }
+              },
+              "queryRef": "public vw_fact_claim.current_status",
+              "nativeQueryRef": "current_status",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim"
+                    }
+                  },
+                  "Property": "Total Claims"
+                }
+              },
+              "queryRef": "public vw_fact_claim.Total Claims",
+              "nativeQueryRef": "Total Claims"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Claim status composition'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

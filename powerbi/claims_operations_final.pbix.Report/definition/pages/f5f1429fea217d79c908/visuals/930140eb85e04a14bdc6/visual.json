@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "930140eb85e04a14bdc6",
+  "position": {
+    "x": 1280,
+    "y": 110,
+    "z": 5100,
+    "height": 150,
+    "width": 285,
+    "tabOrder": 5100
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim"
+                    }
+                  },
+                  "Property": "Average Closed Turnaround Hours"
+                }
+              },
+              "queryRef": "public vw_fact_claim.Average Closed Turnaround Hours",
+              "nativeQueryRef": "Average Closed Turnaround Hours"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Average Closed Turnaround (hours)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

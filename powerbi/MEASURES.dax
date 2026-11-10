@@ -1,0 +1,151 @@
+/*
+  Insurance Claims Operations Analytics
+  Model: vw_fact_claim (one row per claim), vw_fact_claim_event (one row per stage event).
+  Snapshot: 2026-10-31 23:59:59, matching the Python and SQL outputs.
+  Import mode is recommended for this portfolio model.
+*/
+
+As Of Timestamp = DATE(2026, 10, 31) + TIME(23, 59, 59)
+
+Total Claims = DISTINCTCOUNT('vw_fact_claim'[claim_id])
+
+Approved Claims =
+CALCULATE(
+    [Total Claims],
+    KEEPFILTERS('vw_fact_claim'[current_status] = "Approved")
+)
+
+Rejected Claims =
+CALCULATE(
+    [Total Claims],
+    KEEPFILTERS('vw_fact_claim'[current_status] = "Rejected")
+)
+
+Closed Claims =
+CALCULATE(
+    [Total Claims],
+    KEEPFILTERS('vw_fact_claim'[current_status] IN {"Approved", "Rejected"})
+)
+
+Open Claims =
+CALCULATE(
+    [Total Claims],
+    KEEPFILTERS('vw_fact_claim'[current_status] IN {"Pending", "In Review"})
+)
+
+Closed Approval Rate = DIVIDE([Approved Claims], [Closed Claims])
+
+Avg Closed Turnaround Hours =
+AVERAGEX(
+    FILTER(
+        'vw_fact_claim',
+        'vw_fact_claim'[current_status] IN {"Approved", "Rejected"}
+            && NOT ISBLANK('vw_fact_claim'[closed_at])
+    ),
+    DATEDIFF(
+        'vw_fact_claim'[submitted_at],
+        'vw_fact_claim'[closed_at],
+        SECOND
+    ) / 3600
+)
+
+Open Claims Older Than 72 Hours =
+CALCULATE(
+    [Open Claims],
+    FILTER(
+        'vw_fact_claim',
+        'vw_fact_claim'[submitted_at] < [As Of Timestamp] - 3
+    )
+)
+
+Stage Events = COUNTROWS('vw_fact_claim_event')
+
+Completed Stage Events =
+CALCULATE(
+    [Stage Events],
+    KEEPFILTERS(NOT ISBLANK('vw_fact_claim_event'[exited_at]))
+)
+
+Stage SLA Breaches =
+// Overall definition: completed events plus active events evaluated at the snapshot.
+COUNTROWS(
+    FILTER(
+        'vw_fact_claim_event',
+        VAR EndTime = COALESCE(
+            'vw_fact_claim_event'[exited_at],
+            [As Of Timestamp]
+        )
+        VAR ElapsedHours =
+            DATEDIFF('vw_fact_claim_event'[entered_at], EndTime, SECOND) / 3600
+        RETURN ElapsedHours > 'vw_fact_claim_event'[allowed_hours]
+    )
+)
+
+Completed Stage SLA Breaches =
+// Completed-only definition: active events are intentionally excluded.
+COUNTROWS(
+    FILTER(
+        'vw_fact_claim_event',
+        NOT ISBLANK('vw_fact_claim_event'[exited_at])
+            && DATEDIFF(
+                'vw_fact_claim_event'[entered_at],
+                'vw_fact_claim_event'[exited_at],
+                SECOND
+            ) / 3600 > 'vw_fact_claim_event'[allowed_hours]
+    )
+)
+
+Stage SLA Breach Rate = DIVIDE([Stage SLA Breaches], [Stage Events])
+
+Completed Stage SLA Breach Rate =
+DIVIDE([Completed Stage SLA Breaches], [Completed Stage Events])
+
+Average Completed Stage Hours =
+AVERAGEX(
+    FILTER(
+        'vw_fact_claim_event',
+        NOT ISBLANK('vw_fact_claim_event'[exited_at])
+    ),
+    DATEDIFF(
+        'vw_fact_claim_event'[entered_at],
+        'vw_fact_claim_event'[exited_at],
+        SECOND
+    ) / 3600
+)
+
+Overdue Open Stages =
+COUNTROWS(
+    FILTER(
+        'vw_fact_claim_event',
+        ISBLANK('vw_fact_claim_event'[exited_at])
+            && DATEDIFF(
+                'vw_fact_claim_event'[entered_at],
+                [As Of Timestamp],
+                SECOND
+            ) / 3600 > 'vw_fact_claim_event'[allowed_hours]
+    )
+)
+
+Claims Submitted =
+CALCULATE(
+    [Total Claims],
+    USERELATIONSHIP('Calendar'[Date], 'vw_fact_claim'[Submitted Date])
+)
+
+Claims Submitted Previous Month =
+CALCULATE(
+    [Claims Submitted],
+    DATEADD('Calendar'[Date], -1, MONTH)
+)
+
+Claims Submitted MoM % =
+DIVIDE(
+    [Claims Submitted] - [Claims Submitted Previous Month],
+    [Claims Submitted Previous Month]
+)
+
+Rejected Claims % of Closed = DIVIDE([Rejected Claims], [Closed Claims])
+
+Average Claim Amount = AVERAGE('vw_fact_claim'[claim_amount])
+
+Total Claim Amount = SUM('vw_fact_claim'[claim_amount])

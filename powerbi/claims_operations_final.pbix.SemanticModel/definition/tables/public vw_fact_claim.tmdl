@@ -1,0 +1,192 @@
+table 'public vw_fact_claim'
+	lineageTag: 4d34cbae-63d8-41b1-9e63-831981d9eef4
+
+	measure 'Total Claims' =
+			
+			DISTINCTCOUNT('public vw_fact_claim'[claim_id])
+		formatString: 0
+		lineageTag: e10a749d-a074-441b-b9de-16ce06a0fb28
+
+	measure 'Approved Claims' =
+			
+			CALCULATE(
+			    [Total Claims],
+			    'public vw_fact_claim'[current_status] = "Approved"
+			)
+		formatString: 0
+		lineageTag: 19776719-7fc8-41b3-a161-3172b37daaff
+
+	measure 'Open Claims' =
+			
+			CALCULATE(
+			    [Total Claims],
+			    'public vw_fact_claim'[current_status] IN {"Pending", "In Review"}
+			)
+		formatString: 0
+		lineageTag: 6b4444cb-47c9-4106-acbf-1c350fb95f2b
+
+	measure 'Closed Approval Rate' =
+			
+			DIVIDE(
+			    [Approved Claims],
+			    CALCULATE(
+			        [Total Claims],
+			        'public vw_fact_claim'[current_status] IN {"Approved", "Rejected"}
+			    ),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: c985eb5d-6cfa-4e4b-86aa-3eb9636c2e44
+
+	measure 'Rejected Claims' =
+			
+			CALCULATE([Total Claims], 'public vw_fact_claim'[current_status] = "Rejected")
+		formatString: 0
+		lineageTag: 7ae8f6d8-9fc9-4946-a5ab-827a650c570f
+
+	measure 'Average Closed Turnaround Hours' =
+			
+			AVERAGEX(FILTER('public vw_fact_claim', 'public vw_fact_claim'[current_status] IN {"Approved", "Rejected"} && NOT ISBLANK('public vw_fact_claim'[closed_at])), DATEDIFF('public vw_fact_claim'[submitted_at], 'public vw_fact_claim'[closed_at], MINUTE) / 60.0)
+		formatString: 0.00
+		lineageTag: 3a1c406f-5832-423a-9061-27a4a6c36cd7
+
+	measure 'Open Claims Over 72 Hours' =
+			
+			CALCULATE(DISTINCTCOUNT('public vw_fact_claim'[claim_id]), FILTER('public vw_fact_claim', 'public vw_fact_claim'[current_status] IN {"Pending", "In Review"} && DATEDIFF('public vw_fact_claim'[submitted_at], DATE(2026,10,31)+TIME(23,59,59), HOUR) > 72))
+		formatString: 0
+		lineageTag: e25158c6-a2be-4085-8d7d-8e9b3d4eff83
+
+	measure 'Closed Claims' =
+			
+			CALCULATE([Total Claims], 'public vw_fact_claim'[current_status] IN {"Approved", "Rejected"})
+		formatString: 0
+		lineageTag: bef9fef3-e08c-4f73-b4a8-9bd580ca94ef
+
+	measure 'Rejection Rate' =
+			
+			DIVIDE([Rejected Claims], [Closed Claims], 0)
+		formatString: 0.00%
+		lineageTag: 249d0243-9aad-40b1-a70a-f3289333bf3d
+
+	column claim_id
+		dataType: string
+		lineageTag: d57495a2-38ee-4269-a8eb-ddf6e988a4ba
+		summarizeBy: none
+		sourceColumn: claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column policy_id
+		dataType: string
+		lineageTag: 55974912-308f-4e56-b800-c4d17c9fd690
+		summarizeBy: none
+		sourceColumn: policy_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column assigned_team_id
+		dataType: string
+		lineageTag: 23cb67a0-709f-4308-b71c-728175fa1db3
+		summarizeBy: none
+		sourceColumn: assigned_team_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column claim_amount
+		dataType: double
+		lineageTag: 519d346c-04fb-418d-90cc-258511ff4df4
+		summarizeBy: sum
+		sourceColumn: claim_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column submitted_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: adda76e3-aeef-40bf-ad55-6325a2223a00
+		summarizeBy: none
+		sourceColumn: submitted_at
+
+		variation Variation
+			isDefault
+			relationship: ff28a756-7057-4735-8a5d-95c5a3171588
+			defaultHierarchy: LocalDateTable_6b335c40-d130-4b66-b2d1-a01e49766f45.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column closed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 45b9e55b-0cac-49a1-b8a3-0c304be0ac80
+		summarizeBy: none
+		sourceColumn: closed_at
+
+		variation Variation
+			isDefault
+			relationship: 6bc88639-d0e6-4187-89f1-723821926dca
+			defaultHierarchy: LocalDateTable_21548ffa-7d38-46d8-99fa-641ffb2fe19b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_status
+		dataType: string
+		lineageTag: 144f7968-8de2-4084-a7d8-757337e08455
+		summarizeBy: none
+		sourceColumn: current_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column rejection_reason
+		dataType: string
+		lineageTag: 64193f0d-0da2-442f-89e2-d35f21c772ee
+		summarizeBy: none
+		sourceColumn: rejection_reason
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column insurance_type
+		dataType: string
+		lineageTag: f9fd2247-4efc-4eb8-a53b-adfb15c301b5
+		summarizeBy: none
+		sourceColumn: insurance_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 0453731b-7aeb-474e-af81-8effb796512e
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Submitted Date' =
+			
+			DATE(
+			    YEAR('public vw_fact_claim'[submitted_at]),
+			    MONTH('public vw_fact_claim'[submitted_at]),
+			    DAY('public vw_fact_claim'[submitted_at])
+			)
+		formatString: General Date
+		lineageTag: 066d7fba-e196-45f9-87a5-3606a6ec7653
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'public vw_fact_claim' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_fact_claim = Source{[Schema="public",Item="vw_fact_claim"]}[Data]
+				in
+				    public_vw_fact_claim
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

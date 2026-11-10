@@ -1,0 +1,177 @@
+table 'public vw_fact_claim_event'
+	lineageTag: b3faf8b7-d2b7-4433-b446-bf975c158c0b
+
+	measure 'Completed Stage Events' =
+			
+			COUNTROWS(FILTER('public vw_fact_claim_event', NOT ISBLANK('public vw_fact_claim_event'[exited_at])))
+		formatString: 0
+		lineageTag: 00612e4a-4b4d-4e1d-8c87-77695542b3d1
+
+	measure 'Completed SLA Breaches' =
+			
+			COUNTROWS(FILTER('public vw_fact_claim_event', NOT ISBLANK('public vw_fact_claim_event'[exited_at]) && DATEDIFF('public vw_fact_claim_event'[entered_at], 'public vw_fact_claim_event'[exited_at], MINUTE) > 'public vw_fact_claim_event'[allowed_hours] * 60))
+		formatString: 0
+		lineageTag: 7830bfa7-585b-4b69-8e50-3571d3c42721
+
+	measure 'Completed Stage SLA Breach Rate' =
+			
+			DIVIDE([Completed SLA Breaches], [Completed Stage Events], 0)
+		formatString: 0.00%
+		lineageTag: 183431ea-0094-42dd-ac2a-ca0f89da56fe
+
+	measure 'Average Completed Stage Hours' =
+			
+			AVERAGEX(FILTER('public vw_fact_claim_event', NOT ISBLANK('public vw_fact_claim_event'[exited_at])), DATEDIFF('public vw_fact_claim_event'[entered_at], 'public vw_fact_claim_event'[exited_at], MINUTE)/60.0)
+		formatString: 0.00
+		lineageTag: 6075f4cf-678f-4620-9364-1959d4f7387b
+
+	measure 'Event Count' =
+			
+			DISTINCTCOUNT('public vw_fact_claim_event'[event_id])
+		formatString: 0
+		lineageTag: 480311c2-231b-4c42-aa3f-9643cb76a38d
+
+	column event_id
+		dataType: string
+		lineageTag: cf0c9b3b-411e-40fc-870b-8151388fca4f
+		summarizeBy: none
+		sourceColumn: event_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column claim_id
+		dataType: string
+		lineageTag: 8e3117c4-768f-4561-9439-dce6729a656f
+		summarizeBy: none
+		sourceColumn: claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column team_id
+		dataType: string
+		lineageTag: 6cf8bf81-3d36-4856-95c4-7ce5ad83216e
+		summarizeBy: none
+		sourceColumn: team_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column stage
+		dataType: string
+		lineageTag: b6f593ee-7257-4a94-840d-b7baffaef2d2
+		summarizeBy: none
+		sourceColumn: stage
+
+		annotation SummarizationSetBy = Automatic
+
+	column entered_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9f58cbf7-31a8-434e-8a16-e9a8e4318383
+		summarizeBy: none
+		sourceColumn: entered_at
+
+		variation Variation
+			isDefault
+			relationship: d1568636-e6f2-48f1-a0df-9e64094261de
+			defaultHierarchy: LocalDateTable_db39feef-d660-4c75-a14f-7e4255827b72.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column exited_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f28aecaf-325a-4eae-b65e-cbfe97f55a0a
+		summarizeBy: none
+		sourceColumn: exited_at
+
+		variation Variation
+			isDefault
+			relationship: dda69516-3a70-4e1d-bc9a-c69caccf74c7
+			defaultHierarchy: LocalDateTable_26d11f35-2dd2-4f8f-b7b3-d18ee6836d78.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column policy_id
+		dataType: string
+		lineageTag: 5b5dd26e-db78-43e7-a4d0-b1463da5c085
+		summarizeBy: none
+		sourceColumn: policy_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_status
+		dataType: string
+		lineageTag: 11216ed2-27d3-45be-bf3c-ff5576a4f265
+		summarizeBy: none
+		sourceColumn: current_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column insurance_type
+		dataType: string
+		lineageTag: b0a43531-fe37-4d2e-8bbf-377979332314
+		summarizeBy: none
+		sourceColumn: insurance_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column rule_id
+		dataType: string
+		lineageTag: a2bf51d0-d22b-49d4-b28b-b50a44af201e
+		summarizeBy: none
+		sourceColumn: rule_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column allowed_hours
+		dataType: int64
+		formatString: 0
+		lineageTag: fdebd121-5745-45ae-9584-4f7027391e4a
+		summarizeBy: sum
+		sourceColumn: allowed_hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_from
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5d6c2a66-6b1f-41f6-8a58-f124bd4dc27c
+		summarizeBy: none
+		sourceColumn: effective_from
+
+		variation Variation
+			isDefault
+			relationship: c387863c-b3de-4a67-abd0-6da46055c065
+			defaultHierarchy: LocalDateTable_05aab5ff-dc60-43cc-878e-d39c30cc6c36.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column effective_to
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a0f61533-fa2b-4115-a946-cb20acfd1dc6
+		summarizeBy: none
+		sourceColumn: effective_to
+
+		variation Variation
+			isDefault
+			relationship: b1c7d6a1-aff8-4971-be2a-2f5c16586576
+			defaultHierarchy: LocalDateTable_ba21f513-f38f-48a7-a6a9-cd78e05906e7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'public vw_fact_claim_event' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_fact_claim_event = Source{[Schema="public",Item="vw_fact_claim_event"]}[Data]
+				in
+				    public_vw_fact_claim_event
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,36 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["public vw_dim_customer","public vw_dim_policy","public vw_dim_team","public vw_fact_claim","public vw_fact_claim_event","public vw_dim_sla_rule"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'public vw_dim_customer'
+ref table 'public vw_dim_policy'
+ref table DateTableTemplate_6ce7bc9c-adbb-4822-9a8c-0697bed0861e
+ref table LocalDateTable_3acd4abb-8d14-445e-8b1b-75667a8ca99f
+ref table LocalDateTable_8ae835d2-253c-4e1f-9ac2-f99410a8c0ae
+ref table 'public vw_dim_team'
+ref table 'public vw_fact_claim'
+ref table LocalDateTable_6b335c40-d130-4b66-b2d1-a01e49766f45
+ref table LocalDateTable_21548ffa-7d38-46d8-99fa-641ffb2fe19b
+ref table 'public vw_fact_claim_event'
+ref table LocalDateTable_db39feef-d660-4c75-a14f-7e4255827b72
+ref table LocalDateTable_26d11f35-2dd2-4f8f-b7b3-d18ee6836d78
+ref table LocalDateTable_05aab5ff-dc60-43cc-878e-d39c30cc6c36
+ref table LocalDateTable_ba21f513-f38f-48a7-a6a9-cd78e05906e7
+ref table 'public vw_dim_sla_rule'
+ref table LocalDateTable_598e8235-63fe-44e6-b459-e1c2584fe68f
+ref table LocalDateTable_e9ca4f27-ff6e-4497-a6e6-9845e2448196
+ref table Calendar
+
+ref cultureInfo en-US
+

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "96c87422092846a3b16e",
+  "position": {
+    "x": 500,
+    "y": 110,
+    "z": 1100,
+    "height": 150,
+    "width": 435,
+    "tabOrder": 1100
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "public vw_fact_claim_event"
+                    }
+                  },
+                  "Property": "Completed SLA Breaches"
+                }
+              },
+              "queryRef": "public vw_fact_claim_event.Completed SLA Breaches",
+              "nativeQueryRef": "Completed SLA Breaches"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Completed SLA breaches'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,80 @@
+table 'public vw_dim_policy'
+	lineageTag: 7f4afa50-a641-433e-ba99-341630d8017e
+
+	column policy_id
+		dataType: string
+		lineageTag: 56751614-501c-4b0f-bc8a-3d7538bbbff1
+		summarizeBy: none
+		sourceColumn: policy_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 1fcdbbc2-cafe-441e-9573-0b8bc9c5bf28
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column insurance_type
+		dataType: string
+		lineageTag: 4c68b077-e1a6-4731-95f3-b74ccb95c8ae
+		summarizeBy: none
+		sourceColumn: insurance_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column coverage_amount
+		dataType: double
+		lineageTag: 1ed32743-8688-4992-8bc2-e5560a359aa4
+		summarizeBy: sum
+		sourceColumn: coverage_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column start_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7327870a-af4a-4057-9d5f-8796668277d0
+		summarizeBy: none
+		sourceColumn: start_date
+
+		variation Variation
+			isDefault
+			relationship: 368eb47e-6bee-42c3-9e48-d913a0678d27
+			defaultHierarchy: LocalDateTable_3acd4abb-8d14-445e-8b1b-75667a8ca99f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column end_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cea7b3bd-f6ba-4591-852c-75b5b7e2b01a
+		summarizeBy: none
+		sourceColumn: end_date
+
+		variation Variation
+			isDefault
+			relationship: b0e5a958-f6d5-48cd-a79f-bea3d2796be8
+			defaultHierarchy: LocalDateTable_8ae835d2-253c-4e1f-9ac2-f99410a8c0ae.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'public vw_dim_policy' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_dim_policy = Source{[Schema="public",Item="vw_dim_policy"]}[Data]
+				in
+				    public_vw_dim_policy
+
+	annotation PBI_ResultType = Table
+

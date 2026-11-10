@@ -1,0 +1,81 @@
+table 'public vw_dim_sla_rule'
+	lineageTag: cc804ffb-cbd1-4b40-9bad-32dab57ade52
+
+	column rule_id
+		dataType: string
+		lineageTag: 5dcb9a21-724c-429d-a2a8-7671192557a6
+		summarizeBy: none
+		sourceColumn: rule_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column insurance_type
+		dataType: string
+		lineageTag: 90c595da-2dd6-42ec-8347-45a92494c432
+		summarizeBy: none
+		sourceColumn: insurance_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column stage
+		dataType: string
+		lineageTag: 2891252a-60be-4d9d-8cef-ba55039b97da
+		summarizeBy: none
+		sourceColumn: stage
+
+		annotation SummarizationSetBy = Automatic
+
+	column allowed_hours
+		dataType: int64
+		formatString: 0
+		lineageTag: a7f03e48-b0f8-47e7-90de-fffd8b632788
+		summarizeBy: sum
+		sourceColumn: allowed_hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_from
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 721b773e-8269-48c6-a910-b88bfa212195
+		summarizeBy: none
+		sourceColumn: effective_from
+
+		variation Variation
+			isDefault
+			relationship: b30fa253-1104-41c6-8c52-c18de8f3d2c4
+			defaultHierarchy: LocalDateTable_598e8235-63fe-44e6-b459-e1c2584fe68f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column effective_to
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5651c9d5-747f-458b-8d66-9a15c54a4b8c
+		summarizeBy: none
+		sourceColumn: effective_to
+
+		variation Variation
+			isDefault
+			relationship: 319dd5f2-7d8b-4fae-9e77-aada81f20acf
+			defaultHierarchy: LocalDateTable_e9ca4f27-ff6e-4497-a6e6-9845e2448196.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'public vw_dim_sla_rule' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5435", "claims_analytics"),
+				    public_vw_dim_sla_rule = Source{[Schema="public",Item="vw_dim_sla_rule"]}[Data]
+				in
+				    public_vw_dim_sla_rule
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
