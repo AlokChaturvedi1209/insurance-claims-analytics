@@ -1,272 +1,230 @@
 # Insurance Claims Operations Analytics & Bottleneck Detection
 
-An independent Data Analyst / Product Operations Analyst portfolio project that
-turns synthetic insurance claims data into an auditable operations monitoring
-workflow. The project combines deterministic data generation, PostgreSQL,
-Python analytics, SQL validation, and a three-page Power BI dashboard.
+**A reproducible Data Analyst portfolio project for turning claims workflow data into operational priorities.**
 
-> **Synthetic-data disclaimer:** Every customer, policy, claim, event, SLA rule,
-> KPI, and finding is synthetic. The results demonstrate analytical workflow and
-> reporting discipline; they are not insurer, regulatory, or causal findings.
+This project generates a deterministic synthetic insurance-claims snapshot, validates it through Python and PostgreSQL, and presents the results in a three-page Power BI report. It focuses on backlog aging, stage-level SLA exposure, throughput, rejection patterns, and measurement discipline.
 
-## Business Problem
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![SQL](https://img.shields.io/badge/SQL-operational%20analytics-2F6B9A?logo=postgresql&logoColor=white)](sql/002_operational_queries.sql)
+[![Power BI](https://img.shields.io/badge/Power%20BI-three--page%20report-F2C811?logo=powerbi&logoColor=111827)](powerbi/claims_operations_final.pbix.pbip)
+[![pandas](https://img.shields.io/badge/pandas-data%20preparation-150458?logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![pytest](https://img.shields.io/badge/pytest-14%20passed%20%7C%202%20skipped-0A7B83?logo=pytest&logoColor=white)](tests/)
 
-Claims operations teams need to know where work is aging, which processing
-stages are breaching service thresholds, whether differences are concentrated by
-category or team, and which rejection reasons merit investigation. A useful
-analysis must also make its denominators explicit and reconcile independent
-calculation paths.
+![Executive Overview](docs/screenshots/01_executive_overview.png)
 
-This project answers those questions for a reproducible snapshot of 50,000
-claims as of `2026-10-31 23:59:59`.
+## At A Glance
 
-## Objectives
+| Project signal | Verified result |
+| --- | ---: |
+| Synthetic claims analyzed | **50,000** |
+| Claim-stage events | **185,527** |
+| Power BI report pages | **3** |
+| Default automated test run | **14 passed, 2 skipped** |
+| Prior PostgreSQL-enabled run | **16 passed** |
+| Reporting snapshot | **2026-10-31 23:59:59** |
 
-- Build a normalized claims operations data model with enforceable integrity.
-- Calculate claim status, approval, rejection, turnaround, backlog, and aging KPIs.
-- Measure stage-level SLA performance using effective insurance-type rules.
-- Separate completed-stage quality from overall exposure including active stages.
-- Investigate category, team/region, stage, and rejection patterns.
-- Deliver a validated Power BI report and evidence-based operational recommendations.
+> **Synthetic-data disclaimer:** Every customer, policy, claim, event, SLA rule, KPI, and finding is synthetic. The results demonstrate analytical workflow and reporting discipline; they are not insurer, regulatory, causal, or financial findings.
+
+## Project Overview
+
+Claims operations teams need to identify where work is aging, which stages are exceeding service thresholds, whether patterns vary by category or team, and which recorded rejection reasons warrant investigation. The project addresses those questions with an auditable workflow from generated source tables to validated metrics and dashboard-ready views.
+
+### Business Questions
+
+- How large is the open backlog, and how much of it is aged beyond 72 hours?
+- Which processing stages have the highest SLA exposure or longest completed duration?
+- Are differences concentrated by insurance type, assigned team, or region?
+- What do the recorded rejection reasons suggest for the next investigation?
+- Do claim-level KPIs remain correct when claim events create one-to-many fan-out?
 
 ## Verified Snapshot
 
-| KPI | Verified result |
-| --- | ---: |
-| Claims | 50,000 |
-| PostgreSQL claim-stage events | 185,527 |
-| Approved / rejected / open | 32,912 / 7,977 / 9,111 |
-| Closed approval rate | 80.49% |
-| Average closed turnaround | 125.16 hours |
-| Open claims over 72 hours | 7,744 / 9,111 = 85.00% |
-| Completed-stage SLA breaches | 59,722 / 176,416 = 33.85% |
-| Overall-stage SLA breaches | 67,901 / 185,527 = 36.60% |
+| KPI | Result | Definition |
+| --- | ---: | --- |
+| Approved / rejected / open claims | **32,912 / 7,977 / 9,111** | Current claim status |
+| Closed approval rate | **80.49%** | 32,912 approved / 40,889 closed |
+| Average closed turnaround | **125.16 hours** | Average `closed_at - submitted_at` across closed claims |
+| Open claims over 72 hours | **7,744 / 9,111 = 85.00%** | Open claims older than the monitoring threshold |
+| Overall-stage SLA breach rate | **67,901 / 185,527 = 36.60%** | Completed and active eligible stage events |
+| Completed-stage SLA breach rate | **59,722 / 176,416 = 33.85%** | Completed eligible events only |
 
-The completed-stage rate excludes active events. The overall rate uses the fixed
-snapshot as the end time for active events and includes 8,179 active-stage
-breaches. Both are valid, intentionally distinct measures.
+SLA breach means elapsed time is **strictly greater than** the effective rule's `allowed_hours`. Completed events use `exited_at`; active events use the fixed reporting timestamp. Claim KPIs use distinct claim IDs so event-level fan-out cannot inflate counts.
 
-## Technology Stack
+### Why The SLA Denominators Matter
 
-- Python 3.11+ with pandas and NumPy
-- PostgreSQL 16 via Docker Compose
-- SQLAlchemy and psycopg for database access
-- Power BI Desktop, PostgreSQL views, Power Query M, and DAX
-- pytest for unit/integration validation
-- Ruff for linting
-- Windows PowerShell commands for the reproducible local workflow
+The two SLA measures answer different operational questions:
 
-## Architecture And Data Flow
+- **Completed-stage quality:** `59,722 / 176,416 = 33.85%`; active events are excluded.
+- **Overall operational exposure:** `67,901 / 185,527 = 36.60%`; active events are evaluated at the snapshot and included.
+- **Active-stage component:** `8,179 / 9,111 = 89.77%`; current active events already beyond their effective thresholds.
+
+These are intentionally distinct definitions, not a calculation disagreement. Full reconciliation is documented in [`reports/FINAL_VALIDATION.md`](reports/FINAL_VALIDATION.md).
+
+## Dashboard Preview
+
+### 01 · Executive Overview
+
+Portfolio volume, closed approval, open backlog, turnaround, aging, monthly trend, and insurance-type mix.
+
+![Executive Overview](docs/screenshots/01_executive_overview.png)
+
+### 02 · SLA & Bottlenecks
+
+Stage and team comparisons, completed duration, SLA exposure, and overdue active-stage exceptions.
+
+![SLA & Bottlenecks](docs/screenshots/02_sla_bottlenecks.png)
+
+### 03 · Rejection Investigation
+
+Recorded rejection reasons, category and team slices, and claim-level investigation detail.
+
+![Rejection Investigation](docs/screenshots/03_rejection_investigation.png)
+
+The images are authentic Power BI captures. See [`docs/screenshots/README.md`](docs/screenshots/README.md) for page mapping and capture guidance.
+
+## Findings Worth Investigating
+
+| Signal | Verified evidence | Interpretation |
+| --- | --- | --- |
+| Aged open backlog | **85.00%** of open claims are over 72 hours | The immediate exposure is active-work aging, not only completed-case quality. |
+| Verification SLA | **17,564 / 47,632 = 36.87%** overall stage breach rate | Highest overall stage breach rate in the snapshot; a queue and handoff investigation candidate. |
+| Assessment duration | **55.10 hours** average completed-stage duration across 42,780 events | Longest completed stage duration, despite not having the highest breach rate. |
+| Category concentration | Health contributes **26,725** overall breaches; Home has the highest normalized rate at **37.28%** | Volume and rate point to different follow-up questions. |
+| Team comparison | Breach-rate spread is **0.31 percentage points** | This snapshot does not establish a major team outlier. |
+
+These are descriptive signals in synthetic data. They do not establish root cause, staffing requirements, savings, or policy changes. See [`reports/BUSINESS_INSIGHTS.md`](reports/BUSINESS_INSIGHTS.md) for the full evidence table and recommendations.
+
+## Reproducible Architecture
 
 ```mermaid
 flowchart LR
-    G[Deterministic Python generator<br/>50,000 synthetic claims] --> CSV[data/processed CSV tables]
-    CSV --> PY[Python analytics<br/>KPI and detail reports]
-    CSV --> DB[PostgreSQL 16<br/>localhost:5435]
-    DB --> SQL[Operational SQL<br/>status, turnaround, SLA, rejection]
-    DB --> V[Star-schema views<br/>claim and event facts]
-    V --> PBI[Power BI report<br/>Executive, SLA, Rejections]
-    PY --> VAL[Validation scripts and pytest]
-    SQL --> VAL
-    DB --> VAL
+    GEN["Seeded Python generator<br/>50,000 synthetic claims"] --> CSV["Six CSV source tables"]
+    CSV --> PY["Python analytics<br/>KPIs and fallback reports"]
+    CSV --> DB["PostgreSQL 16<br/>localhost:5435"]
+    DB --> SQL["Operational SQL<br/>status, turnaround, SLA, rejection"]
+    DB --> VIEWS["Star-schema views<br/>claim and event facts"]
+    VIEWS --> PBI["Power BI report<br/>three operational pages"]
+    PY --> CHECKS["Validation scripts and pytest"]
+    SQL --> CHECKS
+    DB --> CHECKS
+
+    classDef source fill:#12304A,color:#FFFFFF,stroke:#0B1F33,stroke-width:2px;
+    classDef process fill:#007C83,color:#FFFFFF,stroke:#005C61,stroke-width:2px;
+    classDef output fill:#2F6B9A,color:#FFFFFF,stroke:#214D70,stroke-width:2px;
+    class GEN,DB source;
+    class CSV,PY,SQL,VIEWS,CHECKS process;
+    class PBI output;
 ```
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for component details and
-grain/relationship notes.
+The design keeps claim-level facts separate from stage-event facts. PostgreSQL views resolve effective SLA rules by insurance type, stage, and event-entry date; DAX and Python preserve the same completed-versus-overall SLA distinction. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for grain, relationships, and validation boundaries.
 
-## Dataset And Schema
+## Technology And Methods
 
-The generator creates six normalized tables:
+| Area | Implementation |
+| --- | --- |
+| Data generation | Deterministic Python generator with `seed=42` and a fixed reporting timestamp |
+| Data preparation | pandas and NumPy; six normalized CSV tables |
+| Database | PostgreSQL 16 through Docker Compose on host port `5435` |
+| SQL analysis | Constrained schema, operational queries, effective-rule SLA joins, star-schema views |
+| Power BI | Power Query M, DAX measures, PBIP report/semantic-model definitions, three pages |
+| Quality checks | pytest, Ruff, key/foreign-key validation, chronology checks, KPI reconciliation, fallback Power BI asset validation |
+| Analytical methods | Distinct-claim KPIs, event-grain SLA rates, aging thresholds, stage/team/category comparisons, descriptive rejection analysis |
 
-| Table | Grain | Expected rows |
-| --- | --- | ---: |
-| `customers` | One customer | 16,667 |
-| `teams` | One assigned operations team | 4 |
-| `policies` | One policy | 25,000 |
-| `claims` | One claim | 50,000 |
-| `claim_events` | One claim processing-stage event | 185,527 |
-| `sla_rules` | One effective insurance-type/stage rule | 16 |
+## Windows Setup
 
-The schema is defined in [`sql/001_schema.sql`](sql/001_schema.sql). Policies,
-claims, and events use foreign keys; claims and events use chronology and status
-constraints. The Power BI-friendly views in
-[`sql/003_powerbi_star_schema.sql`](sql/003_powerbi_star_schema.sql) attach
-effective SLA attributes to each event without copying data.
+### 1. Create the Python environment
 
-## Analytical Workflow
-
-1. `claims-analytics generate --claims 50000 --seed 42` creates deterministic
-   CSV inputs.
-2. `claims-analytics analyze` calculates Python KPIs and exports report CSVs.
-3. `claims-analytics init-db` creates the PostgreSQL schema.
-4. `claims-analytics load-db` loads only the six standalone project tables.
-5. [`sql/002_operational_queries.sql`](sql/002_operational_queries.sql) provides
-   reusable status, closed-turnaround, active-SLA, and rejection analyses.
-6. Validation scripts and integration tests reconcile keys, timestamps, counts,
-   effective SLA joins, and Python/PostgreSQL results.
-
-Stage SLA breaches use a strict `elapsed time > allowed_hours` comparison.
-Completed events use `exited_at`; active events use the fixed snapshot. Claim
-KPIs use distinct claim IDs so event-level fan-out cannot inflate counts.
-
-## Power BI Dashboard
-
-The saved report assets support three pages. Power BI Desktop visual rendering
-and refresh still require a local Power BI session; automated checks validate
-the source views, measures, report definitions, and fallback exports.
-
-1. **Executive Overview**: total claims, closed approval rate, open backlog,
-   average closed turnaround, aging, monthly trend, and category mix.
-2. **SLA & Bottlenecks**: overall and completed-stage SLA rates, stage/team
-   comparisons, completed duration, and overdue active-stage exceptions.
-3. **Rejection Investigation**: rejection reason mix, category/team slices,
-   claim detail, and investigation hypotheses.
-
-Dashboard guidance is in [`powerbi/DESIGN_SPEC.md`](powerbi/DESIGN_SPEC.md),
-[`powerbi/MEASURES.dax`](powerbi/MEASURES.dax), and
-[`powerbi/IMPLEMENTATION_GUIDE.md`](powerbi/IMPLEMENTATION_GUIDE.md).
-
-The saved `powerbi/claims_operations.pbix` is a 6.4 MB local binary and remains
-ignored by Git. This avoids treating a desktop-specific, refresh-dependent file
-as the reproducible source of the project. The PBIP report/semantic-model
-definitions, SQL views, DAX, Power Query, and validation instructions provide a
-reviewable source record; the original PBIX is not deleted or moved.
-
-## Evidence-Based Findings
-
-Detailed evidence and recommendations are in
-[`reports/BUSINESS_INSIGHTS.md`](reports/BUSINESS_INSIGHTS.md). The key signals
-are:
-
-- 85.00% of open claims are older than 72 hours, making backlog aging the most
-  immediate operational exposure.
-- Verification has the highest overall stage breach rate at 36.87%; Decision is
-  marginally highest on completed-only breach rate at 34.13%.
-- Assessment has the longest completed-stage duration at 55.10 hours.
-- Health contributes 26,725 overall breaches, 39.36% of all breaches, and has
-  the longest average closed turnaround at 142.78 hours.
-- Home has the highest normalized overall category breach rate at 37.28%.
-- Team breach rates vary by only 0.31 percentage points, so no major team outlier
-  is established by this snapshot.
-- Rejection reasons are nearly even: Missing documents leads with 2,018 of
-  7,977 rejected claims, or 25.30%.
-
-These are descriptive associations in synthetic data. They do not prove causes,
-savings, staffing requirements, or policy changes.
-
-## Setup: Windows, Python, Docker, PostgreSQL, Power BI
-
-### Python and reports
-
-Requirements: Python 3.11+, VS Code, and PowerShell.
+Requirements: Python 3.11+, Git, Docker Desktop, PowerShell, and Power BI Desktop for report refresh and visual verification.
 
 ```powershell
-cd insurance-claims-analytics
+git clone <repository-url>
+Set-Location insurance-claims-analytics
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 Copy-Item .env.example .env
+```
+
+The `.env` file is ignored by Git. Do not replace it with credentials from another project or commit it.
+
+### 2. Generate the verified local snapshot
+
+```powershell
 claims-analytics generate --claims 50000 --seed 42
 claims-analytics analyze
-pytest -q
 ```
 
-The generated CSV data and reports are local working artifacts and are ignored
-by Git. Run `--claims 200` for a quicker development check; do not use that
-smaller dataset for the verified portfolio metrics.
+Generated CSV inputs and reports are local working artifacts and are ignored by Git. Use `--claims 200` for a quick development check, but do not use that smaller dataset for the verified portfolio metrics.
 
-If PowerShell blocks activation:
+### 3. Start PostgreSQL and load the six project tables
 
 ```powershell
-.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.venv\Scripts\claims-analytics.exe generate --claims 200
-```
-
-### PostgreSQL with Docker
-
-Install Docker Desktop, then start the project database:
-
-```powershell
+docker compose up -d
 claims-analytics init-db
-Measure-Command { claims-analytics load-db }
+claims-analytics load-db
 python scripts/validate_data.py
 ```
 
-The database uses `localhost:5435`, database `claims_analytics`, user
-`claims_user`, and the local-development password in `.env.example`. Never
-point `DATABASE_URL` at another project's database. `load-db` reloads only the
-six standalone project tables in foreign-key order.
-
-Run the reusable SQL report with a PostgreSQL client:
+The local Docker service exposes PostgreSQL at `localhost:5435`. `load-db` reloads only the six standalone project tables in foreign-key order. Create the Power BI views if needed:
 
 ```powershell
-psql -h localhost -p 5435 -U claims_user -d claims_analytics -f .\sql\002_operational_queries.sql
+psql -h localhost -p 5435 -U claims_user -d claims_analytics -f .\sql\003_powerbi_star_schema.sql
 ```
 
-### Power BI Desktop
+### 4. Open Power BI Desktop
 
-1. Ensure Docker PostgreSQL is running on `localhost:5435`.
-2. Create the views with `sql/003_powerbi_star_schema.sql` if needed.
-3. In Power BI Desktop, select **Get data > PostgreSQL database**.
-4. Use server `localhost:5435`, database `claims_analytics`, and Import mode.
-5. Import the six `vw_dim_*` and `vw_fact_*` views.
-6. Apply the relationships and measures in `powerbi/DESIGN_SPEC.md` and
-   `powerbi/MEASURES.dax`.
-7. Compare unfiltered cards to `reports/kpi_summary.csv` before saving.
+1. Open `powerbi/claims_operations_final.pbix.pbip` or the saved local PBIX if available.
+2. Ensure PostgreSQL is running and refresh the report.
+3. Connect to `localhost:5435`, database `claims_analytics`, using Import mode.
+4. Import the six `vw_dim_*` and `vw_fact_*` views if building from the source definitions.
+5. Apply the relationships and measures in [`powerbi/DESIGN_SPEC.md`](powerbi/DESIGN_SPEC.md) and [`powerbi/MEASURES.dax`](powerbi/MEASURES.dax).
+6. Compare unfiltered cards with the verified snapshot above before saving.
 
-Do not commit database credentials, screenshots containing secrets, or local
-Power BI settings. See [`docs/screenshots/README.md`](docs/screenshots/README.md)
-for portfolio screenshot naming guidance and the captured page previews:
+The binary PBIX is a local, refresh-dependent artifact and is intentionally ignored by Git. The reviewable project record is the PBIP definition, SQL, DAX, Power Query, Python source, tests, screenshots, and documentation.
 
-- [Executive Overview](docs/screenshots/01_executive_overview.png)
-- [SLA & Bottlenecks](docs/screenshots/02_sla_bottlenecks.png)
-- [Rejection Investigation](docs/screenshots/03_rejection_investigation.png)
+## Validation
 
-## Validation Commands
-
-Run the complete automated checks from the project root:
+The default Python test suite and Ruff do not require Docker. The data and Power BI asset validators expect the generated local CSV/report artifacts from the setup steps above:
 
 ```powershell
-# DATABASE_URL is read from the ignored local .env file.
-$env:RUN_POSTGRES_INTEGRATION='1'
 .\.venv\Scripts\pytest.exe -q
 .\.venv\Scripts\ruff.exe check .
 .\.venv\Scripts\python.exe scripts\validate_data.py
 .\.venv\Scripts\python.exe scripts\validate_powerbi_assets.py
 ```
 
-The integration suite is opt-in so ordinary `pytest -q` does not require
-Docker. The verified project state is 16 passing tests, passing Ruff, passing
-data validation, and passing fallback Power BI asset validation.
+Current verified results:
 
-## Project Structure
+- Default suite: **14 passed, 2 skipped**.
+- Prior PostgreSQL-enabled suite: **16 passed** with `RUN_POSTGRES_INTEGRATION=1`; those integration tests reload project tables and are opt-in.
+- Ruff: **passed**.
+- Data and fallback Power BI asset validation: **passed**.
 
-```text
-src/insurance_analytics/     Python generator, analytics, CLI, database tools
-sql/                          PostgreSQL schema, operational SQL, star-schema views
-tests/                        Unit, data, Power BI asset, and PostgreSQL tests
-data/processed/               Local generated CSV inputs; ignored by Git
-reports/                      Local CSV outputs and checked-in Markdown reports
-powerbi/                      DAX, Power Query, design docs, PBIX/PBIP assets
-scripts/                      Data and fallback asset validation scripts
-docs/                         Architecture, portfolio, and screenshot guidance
-docker-compose.yml            PostgreSQL 16 local service on port 5435
-pyproject.toml                Packaging, dependencies, pytest, and Ruff settings
-```
+Technical details and the exact prior database-enabled run are in [`reports/TECHNICAL_VALIDATION.md`](reports/TECHNICAL_VALIDATION.md). The final release review is in [`reports/PRE_COMMIT_REVIEW.md`](reports/PRE_COMMIT_REVIEW.md).
 
-## Limitations And Future Considerations
+## Repository Guide
 
-- All data is synthetic and the SLA thresholds are illustrative, not regulatory.
-- This is a single fixed snapshot, not a production trend or forecast.
-- The data lacks staffing, complexity, rework, intake channel, document
-  completeness, claimant geography, and case-level causal fields.
-- Team region is assigned-team region, not customer location.
-- Descriptive differences do not prove causality or justify untested savings.
-- Future work could add multiple snapshots, richer workflow reason codes,
-  documented data contracts, and authenticated deployment controls.
+| Path | Purpose |
+| --- | --- |
+| [`src/insurance_analytics/`](src/insurance_analytics/) | Generator, analytics, configuration, CLI, and database loader |
+| [`sql/`](sql/) | PostgreSQL schema, operational queries, and Power BI views |
+| [`powerbi/`](powerbi/) | DAX, Power Query, design guidance, PBIP report, and semantic model |
+| [`tests/`](tests/) | Unit, data, Power BI asset, and opt-in PostgreSQL integration tests |
+| [`scripts/`](scripts/) | Data and fallback Power BI validation scripts |
+| [`reports/BUSINESS_INSIGHTS.md`](reports/BUSINESS_INSIGHTS.md) | Detailed findings, denominators, recommendations, and limitations |
+| [`reports/FINAL_VALIDATION.md`](reports/FINAL_VALIDATION.md) | KPI and SLA reconciliation |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Component flow, data grain, relationships, and validation boundaries |
+| [`powerbi/IMPLEMENTATION_GUIDE.md`](powerbi/IMPLEMENTATION_GUIDE.md) | Detailed PostgreSQL-to-Power BI Desktop workflow |
+| [`docs/PORTFOLIO_SUMMARY.md`](docs/PORTFOLIO_SUMMARY.md) | Concise portfolio and resume-ready project summary |
 
-## Portfolio Positioning
+## Evidence Limits
 
-This is a self-directed, reproducible synthetic-data portfolio project. Use
-[`docs/PORTFOLIO_SUMMARY.md`](docs/PORTFOLIO_SUMMARY.md) for a concise project
-description and resume-ready bullets based only on implemented work.
+- The dataset is synthetic and represents one fixed snapshot, not a production trend or forecast.
+- SLA thresholds are illustrative, not regulatory or contractual.
+- The data does not model staffing, case complexity, rework, intake channel, document completeness, claimant geography, or monetary outcomes.
+- Region means assigned-team region, not customer location.
+- Descriptive group differences do not prove causality.
+- Recorded rejection reasons are investigation candidates, not confirmed root causes.
+
+The project is designed to show disciplined analytical reasoning, transparent denominators, reproducible validation, and clear communication of uncertainty.
